@@ -95,7 +95,7 @@ class StarWars:
         self.items = []
 
         self.score = 0
-        self.max_hp = 2
+        self.max_hp = 10
         self.hp = self.max_hp
         self.font = pygame.font.Font(None, 36)
         self.score_text = self.font.render("Score: {}".format(self.score), True, self.blue)
@@ -131,9 +131,9 @@ class StarWars:
     def spawn_boss(self):
         if len([enemy for enemy in self.enemies if enemy.enemy_type == "boss"]) < 1:
             boss_x = self.width // 2 - 50
-            boss_y = -50
-            boss_speed_x = 0
-            boss_speed_y = random.uniform(0.5, 1)
+            boss_y = 0
+            boss_speed_x = random.uniform(-1, 1)
+            boss_speed_y = random.uniform(-1, 1)
             self.enemies.append(self.Enemy(boss_x, boss_y, boss_speed_x, boss_speed_y, "boss"))
 
     def show_game_over_screen(self):
@@ -219,12 +219,20 @@ class StarWars:
             for enemy in self.enemies:
                 enemy.rect.x += enemy.speed_x
                 enemy.rect.y += enemy.speed_y
+
                 if enemy.rect.x < 0:
                     enemy.rect.x = 0
                     enemy.speed_x = abs(enemy.speed_x)
                 elif enemy.rect.x > self.width - enemy.rect.width:
                     enemy.rect.x = self.width - enemy.rect.width
                     enemy.speed_x = -abs(enemy.speed_x)
+                if enemy.enemy_type == "boss":
+                    if enemy.rect.y < 0:
+                        enemy.rect.y = 0
+                        enemy.speed_y = abs(enemy.speed_y)
+                    elif enemy.rect.y > self.height - enemy.rect.height:
+                        enemy.rect.y = self.height - enemy.rect.height
+                        enemy.speed_y = -abs(enemy.speed_y)
 
                 if enemy.rect.y > self.height:
                     self.enemies.remove(enemy)
