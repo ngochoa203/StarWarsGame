@@ -72,11 +72,9 @@ class StarWars:
         self.red = (255, 0, 0)
         self.green = (0, 255, 0)
 
-        # Background
         self.background_img = pygame.image.load("D:\VKU\ComputerGraphic\Code Graphic\GamePython\StarWars\Image\Background.jpg")
         self.background_img = pygame.transform.scale(self.background_img, (self.width, self.height))
 
-        # Máy bay
         self.player_img = pygame.image.load("D:\VKU\ComputerGraphic\Code Graphic\GamePython\StarWars\Image\plane.png")
         self.player_img = pygame.transform.scale(self.player_img, (100, 100))
         self.player_rect = self.player_img.get_rect()
@@ -84,7 +82,6 @@ class StarWars:
         self.player_rect.y = self.height - 2 * self.player_rect.height
         self.player_speed = 5
 
-        # Đạn
         self.bullet_size = 8
         self.bullet_speed = 10
         self.bullets = []
@@ -152,7 +149,6 @@ class StarWars:
         self.screen.blit(press_enter_text, press_enter_rect)
         pygame.display.flip()
 
-        # Chờ người chơi nhấn Enter để thoát hoặc chơi lại
         waiting_for_key = True
         while waiting_for_key:
             for event in pygame.event.get():
@@ -160,7 +156,7 @@ class StarWars:
                     pygame.quit()
                     sys.exit()
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:  # Check if Enter key is pressed
+                    if event.key == pygame.K_RETURN:
                         waiting_for_key = False
 
             self.clock.tick(5)
@@ -214,7 +210,6 @@ class StarWars:
 
             self.bullets = [(x, y - self.bullet_speed) for x, y in self.bullets if 0 <= y <= self.height]
 
-            # Spawn enemies
             if random.randint(0, 100) < 2:
                 self.spawn_enemy()
 
@@ -234,12 +229,10 @@ class StarWars:
                 if enemy.rect.y > self.height:
                     self.enemies.remove(enemy)
 
-                # Boss shoots bullets
                 if enemy.enemy_type == "boss" and current_time - enemy.last_bullet_time > enemy.bullet_delay:
                     enemy.bullets.append(enemy.shoot_bullet())
                     enemy.last_bullet_time = current_time
 
-                # Process boss bullets
                 for enemy in self.enemies:
                     if enemy.enemy_type == "boss":
                         bullets_to_remove = []
@@ -248,17 +241,12 @@ class StarWars:
                             pygame.draw.rect(self.screen, enemy.bullet_color, (bullet_x, bullet_y, self.bullet_size, self.bullet_size))
                             bullet_y += enemy.bullet_speed
                             enemy.bullets[i] = (bullet_x, bullet_y)
-
                             if bullet_y > self.height:
                                 bullets_to_remove.append(i)
-
-                            # Check collision with player
                             if self.player_rect.colliderect(pygame.Rect(bullet_x, bullet_y, self.bullet_size, self.bullet_size)):
                                 bullets_to_remove.append(i)
                                 self.hp -= 1
                                 self.hp_text = self.font.render("HP: {}".format(self.hp), True, self.red)
-
-                        # Remove bullets that have moved off the screen or hit the player
                         for index in reversed(bullets_to_remove):
                             enemy.bullets.pop(index)
 
@@ -293,14 +281,10 @@ class StarWars:
                                 self.enemies.remove(enemy)
                                 self.score += 1
                                 self.score_text = self.font.render("Score: {}".format(self.score), True, self.blue)
-                                # Change bullet color for agile planes and bosses
                                 if enemy.bullet_color:
                                     self.draw_bullet(bullet[0], bullet[1], enemy.bullet_color)
 
-            # Xóa đạn đã va chạm
             self.bullets = [bullet for bullet in self.bullets if bullet not in bullets_to_remove]
-
-            # Xóa boss bị hạ
             self.enemies = [enemy for enemy in self.enemies if enemy not in enemies_to_remove]
 
             for enemy in self.enemies:
@@ -311,7 +295,6 @@ class StarWars:
 
             if self.hp <= 0:
                 self.show_game_over_screen()
-                # Wait for the player to press Enter
                 waiting_for_key = True
                 while waiting_for_key:
                     for event in pygame.event.get():
@@ -325,7 +308,7 @@ class StarWars:
 
             self.screen.blit(self.background_img, (0, 0))
             for bullet in self.bullets:
-                self.draw_bullet(bullet[0], bullet[1], (255, 0, 0))  # Default color is red
+                self.draw_bullet(bullet[0], bullet[1], (255, 0, 0))
             for enemy in self.enemies:
                 self.draw_enemy(enemy)
             for item in self.items:
